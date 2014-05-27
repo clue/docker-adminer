@@ -4,37 +4,31 @@
 tool for the web. It is a lightweight alternative to setting up phpMyAdmin.
 This is a [docker](https://www.docker.io) image that eases setup.
 
-## Build
+![](http://www.adminer.org/static/designs/hever/screenshot.png)
+
+See also [online demo](http://adminer.sourceforge.net/adminer.php?username=).
+
+## Usage
+
+This docker image is available as a [trusted build on the docker index](https://index.docker.io/u/clue/adminer/),
+so there's no setup required.
+Using this image for the first time will start a download automatically.
+Further runs will be immediate, as the image will be cached locally.
+
+The recommended way to run this container looks like this:
 
 ```bash
-$ git clone https://github.com/clue/docker-adminer.git
-$ cd docker-adminer
-$ sudo docker build -t adminer .
+$ sudo docker run -d -p 80:80 clue/adminer
 ```
 
-### Running
+The above example exposes the Adminer webinterface on port 80, so that you can now browse to:
 
-This container does not contain its own database,
-but instead allows you to connect to a running instance. 
-
-This makes this container disposable, as it doesn't store any sensitive
-information at all.
-
-#### Running Adminer temporarily
-
-```bash
-$ sudo docker run -it --rm -p 80:80 adminer
 ```
-
-#### Running Adminer daemonized
-
-```bash
-$ sudo docker run -d -p 80:80 adminer
-```
-
-### Accessing your webinterface
-
-The above examples expose the Adminer webinterface on port 80, so that you can browse to:
-
 http://localhost/
+```
 
+This is a rather common setup following docker's conventions:
+
+* `-d` will run a detached instance in the background
+* `-p {OutsidePort}:80` will bind the webserver to the given outside port
+* `clue/adminer` the name of this docker image
