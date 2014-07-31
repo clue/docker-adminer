@@ -3,8 +3,7 @@ MAINTAINER Christian Lück <christian@lueck.tv>
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   nginx supervisor php5-fpm php5-cli \
-  php5-pgsql php5-mysql php5-sqlite \
-  wget
+  php5-pgsql php5-mysql php5-sqlite
 
 # add adminer as the only nginx site
 ADD adminer.nginx.conf /etc/nginx/sites-available/adminer
@@ -13,8 +12,8 @@ RUN rm /etc/nginx/sites-enabled/default
 
 # install adminer and default theme
 RUN mkdir /var/www
-RUN wget http://downloads.sourceforge.net/adminer/adminer-4.1.0.php -O /var/www/index.php
-RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
+ADD http://downloads.sourceforge.net/adminer/adminer-4.1.0.php /var/www/index.php
+ADD https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css /var/www/adminer.css
 WORKDIR /var/www
 RUN chown www-data:www-data -R /var/www
 
