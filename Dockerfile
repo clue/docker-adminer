@@ -18,9 +18,12 @@ RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -
 WORKDIR /var/www
 RUN chown www-data:www-data -R /var/www
 
+# Increase PHP upload limit
+RUN echo "upload_max_filesize = 100M" >> /etc/php5/cli/conf.d/upload_max_filesize.ini
+RUN echo "post_max_size = 100M" >> /etc/php5/cli/conf.d/post_max_size.ini
+
 # expose only nginx HTTP port
 EXPOSE 80
 
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD supervisord -c /etc/supervisor/conf.d/supervisord.conf
-
