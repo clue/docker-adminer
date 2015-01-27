@@ -19,8 +19,8 @@ WORKDIR /var/www
 RUN chown www-data:www-data -R /var/www
 
 # Increase PHP upload limit
-RUN echo "upload_max_filesize = 100M" >> /etc/php5/cli/conf.d/upload_max_filesize.ini
-RUN echo "post_max_size = 100M" >> /etc/php5/cli/conf.d/post_max_size.ini
+RUN echo "upload_max_filesize = 2000M" >> /etc/php5/cli/conf.d/upload_max_filesize.ini
+RUN echo "post_max_size = 2000M" >> /etc/php5/cli/conf.d/post_max_size.ini
 
 # expose only nginx HTTP port
 EXPOSE 80
