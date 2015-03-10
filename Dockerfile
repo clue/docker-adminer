@@ -13,7 +13,7 @@ RUN rm /etc/nginx/sites-enabled/default
 
 # install adminer and default theme
 RUN mkdir /var/www
-RUN wget http://downloads.sourceforge.net/adminer/adminer-4.1.0.php -O /var/www/index.php
+RUN wget http://www.adminer.org/latest.php -O /var/www/index.php
 RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
 WORKDIR /var/www
 RUN chown www-data:www-data -R /var/www
