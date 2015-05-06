@@ -3,7 +3,7 @@ MAINTAINER Christian Lück <christian@lueck.tv>
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   nginx supervisor php5-fpm php5-cli \
-  php5-pgsql php5-mysql php5-sqlite \
+  php5-pgsql php5-mysql php5-sqlite php5-mssql \
   wget
 
 # add adminer as the only nginx site
@@ -24,6 +24,8 @@ RUN echo "post_max_size = 2000M" >> /etc/php5/cli/conf.d/post_max_size.ini
 
 # expose only nginx HTTP port
 EXPOSE 80
+
+ADD freetds.conf /etc/freetds/freetds.conf
 
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD supervisord -c /etc/supervisor/conf.d/supervisord.conf
