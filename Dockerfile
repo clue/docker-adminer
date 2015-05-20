@@ -18,9 +18,13 @@ RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -
 WORKDIR /var/www
 RUN chown www-data:www-data -R /var/www
 
-# Increase PHP upload limit
-RUN echo "upload_max_filesize = 2000M" >> /etc/php5/cli/conf.d/upload_max_filesize.ini
-RUN echo "post_max_size = 2000M" >> /etc/php5/cli/conf.d/post_max_size.ini
+# tune PHP settings for uploading large dumps
+RUN echo "upload_max_filesize = 2000M" >> /etc/php5/upload_large_dumps.ini \
+ && echo "post_max_size = 2000M"       >> /etc/php5/upload_large_dumps.ini \
+ && echo "memory_limit = -1"           >> /etc/php5/upload_large_dumps.ini \
+ && echo "max_execution_time = 0"      >> /etc/php5/upload_large_dumps.ini \
+ && ln -s ../../upload_large_dumps.ini /etc/php5/fpm/conf.d \
+ && ln -s ../../upload_large_dumps.ini /etc/php5/cli/conf.d
 
 # expose only nginx HTTP port
 EXPOSE 80
