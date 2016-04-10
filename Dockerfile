@@ -1,35 +1,23 @@
-FROM ubuntu-debootstrap:14.04
+FROM php:7.0-alpine
+
 MAINTAINER Christian Lück <christian@lueck.tv>
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
-  nginx supervisor php5-fpm php5-cli \
-  php5-pgsql php5-mysql php5-sqlite php5-mssql \
-  wget
+RUN curl -fSL "https://github.com/krallin/tini/releases/download/v0.9.0/tini-static" -o /usr/local/bin/tini && \
+	chmod +x /usr/local/bin/tini
 
-# add adminer as the only nginx site
-ADD adminer.nginx.conf /etc/nginx/sites-available/adminer
-RUN ln -s /etc/nginx/sites-available/adminer /etc/nginx/sites-enabled/adminer
-RUN rm /etc/nginx/sites-enabled/default
+ADD uploading.ini /usr/local/etc/php/conf.d/
 
-# install adminer and default theme
-RUN mkdir /var/www
-RUN wget http://www.adminer.org/latest.php -O /var/www/index.php
-RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
-WORKDIR /var/www
-RUN chown www-data:www-data -R /var/www
+ENTRYPOINT ["/usr/local/bin/tini", "--"]
 
-# tune PHP settings for uploading large dumps
-RUN echo "upload_max_filesize = 2000M" >> /etc/php5/upload_large_dumps.ini \
- && echo "post_max_size = 2000M"       >> /etc/php5/upload_large_dumps.ini \
- && echo "memory_limit = -1"           >> /etc/php5/upload_large_dumps.ini \
- && echo "max_execution_time = 0"      >> /etc/php5/upload_large_dumps.ini \
- && ln -s ../../upload_large_dumps.ini /etc/php5/fpm/conf.d \
- && ln -s ../../upload_large_dumps.ini /etc/php5/cli/conf.d
-
-# expose only nginx HTTP port
 EXPOSE 80
+CMD php -S 0.0.0.0:80 -t /var/www/
 
-ADD freetds.conf /etc/freetds/freetds.conf
+RUN apk --update add postgresql-dev sqlite-dev && \
+	docker-php-ext-install pdo pdo_sqlite pdo_mysql pdo_pgsql && \
+	rm -rf /var/cache/apk/*
 
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD supervisord -c /etc/supervisor/conf.d/supervisord.conf
+ENV ADMINER_VERSION 4.2.4
+
+RUN mkdir /var/www/ && \
+	wget https://www.adminer.org/static/download/$ADMINER_VERSION/adminer-$ADMINER_VERSION.php -O /var/www/index.php && \
+	wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
