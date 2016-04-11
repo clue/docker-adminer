@@ -24,10 +24,8 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 ADD php.ini /usr/local/etc/php/conf.d/php.ini
 
 ## install adminer and default theme
-ENV ADMINER_VERSION 4.2.4
-
 RUN mkdir -p /var/www
-ADD http://www.adminer.org/static/download/$ADMINER_VERSION/adminer-$ADMINER_VERSION.php /var/www/index.php
+ADD http://www.adminer.org/latest.php /var/www/index.php
 ADD https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css /var/www/adminer.css
 RUN chown www-data:www-data -R /var/www
 
