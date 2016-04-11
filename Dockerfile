@@ -16,6 +16,10 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
 
+## Add Tini
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ tini
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
 ## Add the files
 ADD php.ini /usr/local/etc/php/conf.d/php.ini
 
@@ -23,13 +27,9 @@ ADD php.ini /usr/local/etc/php/conf.d/php.ini
 ENV ADMINER_VERSION 4.2.4
 
 RUN mkdir -p /var/www
-ADD https://www.adminer.org/static/download/$ADMINER_VERSION/adminer-$ADMINER_VERSION.php /var/www/index.php
+ADD http://www.adminer.org/static/download/$ADMINER_VERSION/adminer-$ADMINER_VERSION.php /var/www/index.php
 ADD https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css /var/www/adminer.css
 RUN chown www-data:www-data -R /var/www
-
-## Add Tini
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
 
 ## Expose the port
 EXPOSE 80
