@@ -18,7 +18,7 @@ RUN set -x \
 
 ## Add Tini
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
 
 ## Add the files
 ADD php.ini /usr/local/etc/php/conf.d/php.ini
