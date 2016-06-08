@@ -2,23 +2,23 @@ FROM php:7.0.7-alpine
 MAINTAINER Christian Lück <christian@lueck.tv>
 
 ## Install php and dependencies
-RUN apk --no-cache add postgresql-dev sqlite-dev \
-    && docker-php-ext-configure pdo_pgsql -with-pgsql=/usr/include/postgresql/ \
-    && docker-php-ext-configure pdo_sqlite \
+RUN set -ex \
+    && apk add --no-cache postgresql-dev sqlite-dev \
     && docker-php-ext-install pdo pdo_sqlite pdo_mysql pdo_pgsql
 
 ## php odbc hack (@see https://github.com/docker-library/php/issues/103)
 RUN set -x \
-    && apk --no-cache add unixodbc-dev \
     && cd /usr/src/php/ext/odbc \
+    && apk add --no-cache unixodbc-dev $PHPIZE_DEPS \
     && phpize \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
-    && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc
+    && docker-php-ext-configure odbc --with-unixODBC=shared,/usr \
+    && docker-php-ext-install odbc \
+    && apk del $PHPIZE_DEPS
 
 ## Add Tini
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
 
 ## Add the files
 ADD php.ini /usr/local/etc/php/conf.d/php.ini
