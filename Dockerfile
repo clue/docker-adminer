@@ -7,12 +7,13 @@ RUN set -ex \
     && docker-php-ext-install pdo pdo_sqlite pdo_mysql pdo_pgsql
 
 ## php odbc hack (@see https://github.com/docker-library/php/issues/103)
-RUN set -x \
+RUN set -ex \
     && apk add --no-cache unixodbc-dev ${PHPIZE_DEPS} \
+    && docker-php-ext-configure odbc || true \
     && cd /usr/src/php/ext/odbc \
     && phpize \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
-    && docker-php-ext-configure odbc --with-unixODBC=shared,/usr \
+    && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc \
     && apk del ${PHPIZE_DEPS}
 
